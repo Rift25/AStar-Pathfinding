@@ -12,6 +12,7 @@ public class Grid : MonoBehaviour
     public Vector2 gridWorldSize;
     //the size of the nodes on the grid
     public float nodeRadius;
+    //a grid of nodes
     Node[,] grid;
 
     //diameter of the nodes
@@ -41,14 +42,21 @@ public class Grid : MonoBehaviour
     //create the grid
     void CreateGrid()
     {
+        //get a new grid
         grid = new Node[gridSizeX, gridSizeY];
+        //get the most bottom left location of the grid
         Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
+        //populate the grid in the X direction
         for (int x = 0; x < gridSizeX; x++)
         {
+            //populate the grid in the Y direction
             for (int y = 0; y < gridSizeY; y++)
             {
+                //get the world point of each node
                 Vector3 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
+                //check to see if the nodes are walkable or unwalkable
                 bool walkable = !(Physics.CheckSphere(worldPoint, nodeRadius, unwalkableMask));
+                //populate the grid with walkable nodes
                 grid[x, y] = new Node(walkable, worldPoint, x, y);
             }
         }
@@ -57,20 +65,25 @@ public class Grid : MonoBehaviour
     //get a list of nodes that are neighbours to the current node that an object is on
     public List<Node> GetNeighbours(Node node)
     {
+        //create a new list of neighbours
         List<Node> neighbours = new List<Node>();
-
+        //populate the list in the X
         for (int x = -1; x <= 1; x++)
         {
+            //and the Y direction
             for (int y = -1; y <= 1; y++)
             {
                 if (x == 0 && y == 0)
                     continue;
-
+                //add a new node to the grid in the X direction
                 int checkX = node.gridX + x;
+                //add a new node to the grid in the Y direction
                 int checkY = node.gridY + y;
-
+                //if a node can be added in the X direction and it isn't going over the limit of the grid in the X direction
+                //and if a node can be added in the Y direction and it isn't going over the limit of the grid in the Y direction
                 if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
                 {
+                    //add a new neighbour node to the grid in the X and Y direction
                     neighbours.Add(grid[checkX, checkY]);
                 }
             }
